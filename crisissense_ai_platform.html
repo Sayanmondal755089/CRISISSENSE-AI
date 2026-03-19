@@ -1,0 +1,578 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+@keyframes pulse-ring{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.15);opacity:.25}}
+@keyframes scan-line{0%{top:-2px}100%{top:100%}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes glow-pulse{0%,100%{text-shadow:0 0 8px #00f5ff}50%{text-shadow:0 0 24px #00f5ff,0 0 40px #00f5ff}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes slide-up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes particle-rise{0%{transform:translateY(0) scale(1);opacity:.8}100%{transform:translateY(-700px) scale(0.2);opacity:0}}
+@keyframes signal-ping{0%{transform:scale(1);opacity:1}100%{transform:scale(3.5);opacity:0}}
+@keyframes typewriter{from{opacity:0}to{opacity:1}}
+@keyframes bar-fill{from{width:0}}
+body{background:#05050a;font-family:'Inter',sans-serif;overflow-x:hidden;min-height:600px}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:#0d0d1a}
+::-webkit-scrollbar-thumb{background:#00f5ff33;border-radius:2px}
+.glass{background:rgba(13,13,26,0.85);backdrop-filter:blur(20px);border:1px solid rgba(0,245,255,0.1);border-radius:4px}
+.btn{background:transparent;border:1px solid #00f5ff;color:#00f5ff;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;padding:10px 24px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s;text-transform:uppercase}
+.btn::before{content:'';position:absolute;inset:0;background:#00f5ff;transform:translateX(-101%);transition:transform 0.3s;z-index:0}
+.btn:hover{color:#05050a}
+.btn:hover::before{transform:translateX(0)}
+.btn span{position:relative;z-index:1}
+.city-pill{background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.18);border-radius:2px;color:#7de8f0;font-family:'Space Mono',monospace;font-size:11px;padding:7px 14px;cursor:pointer;transition:all 0.2s;letter-spacing:1px}
+.city-pill:hover,.city-pill.active{background:rgba(0,245,255,0.14);border-color:#00f5ff;color:#00f5ff;box-shadow:0 0 10px rgba(0,245,255,0.25)}
+.tweet{border-left:2px solid rgba(0,245,255,0.25);padding:8px 12px;margin-bottom:8px;background:rgba(0,245,255,0.025);border-radius:0 3px 3px 0;animation:slide-up 0.4s ease both}
+.tweet.panic{border-left-color:rgba(255,45,85,0.5);background:rgba(255,45,85,0.03)}
+.label{font-family:'Space Mono',monospace;font-size:9px;color:rgba(0,245,255,0.5);letter-spacing:2px;margin-bottom:10px;display:block;text-transform:uppercase}
+.mono{font-family:'Space Mono',monospace}
+.orb{font-family:'Orbitron',monospace}
+</style>
+</head>
+<body>
+
+<!-- LANDING PAGE -->
+<div id="landing" style="min-height:600px;background:#05050a;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:20px">
+
+  <!-- Grid bg -->
+  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.04;pointer-events:none" xmlns="http://www.w3.org/2000/svg">
+    <defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0L0 0 0 50" fill="none" stroke="#00f5ff" stroke-width="0.5"/></pattern></defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+  </svg>
+  <!-- Scan line -->
+  <div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#00f5ff22,transparent);animation:scan-line 5s linear infinite;pointer-events:none"></div>
+
+  <!-- Particles -->
+  <div id="particles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+
+  <!-- Top nav -->
+  <div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid rgba(0,245,255,0.07);background:rgba(5,5,10,0.7);backdrop-filter:blur(10px);z-index:10">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="orb" style="font-size:13px;color:#00f5ff;letter-spacing:2px;font-weight:700">CRISIS<span style="color:#fff">SENSE</span></span>
+      <span class="mono" style="font-size:9px;color:#ff2d55;letter-spacing:1px">AI</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:6px;height:6px;border-radius:50%;background:#39ff14;box-shadow:0 0 5px #39ff14;animation:pulse-ring 2s infinite"></div>
+      <span class="mono" style="font-size:9px;color:#39ff14;letter-spacing:1px">SYSTEM ONLINE</span>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div style="text-align:center;position:relative;z-index:5;animation:slide-up 0.7s ease both">
+    <!-- Logo ring -->
+    <div style="position:relative;display:inline-block;margin-bottom:32px">
+      <svg width="140" height="140" viewBox="0 0 140 140" style="animation:spin-slow 18s linear infinite;opacity:0.35">
+        <circle cx="70" cy="70" r="60" fill="none" stroke="#00f5ff" stroke-width="0.5" stroke-dasharray="3 6"/>
+        <circle cx="70" cy="70" r="44" fill="none" stroke="#00f5ff" stroke-width="0.5" stroke-dasharray="2 5"/>
+      </svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+          <path d="M26 6L6 20v26h14V34h12v12h14V20L26 6z" stroke="#00f5ff" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+          <circle cx="26" cy="18" r="3.5" fill="#ff2d55"/>
+          <path d="M16 52Q26 40 36 52" fill="none" stroke="#ff2d55" stroke-width="1" opacity="0.6"/>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="orb" style="font-size:clamp(28px,7vw,58px);font-weight:900;color:#fff;letter-spacing:0.05em;line-height:1;margin-bottom:10px">
+      CRISIS<span style="color:#00f5ff;animation:glow-pulse 3s ease-in-out infinite">SENSE</span>
+    </h1>
+    <div class="orb" style="font-size:clamp(10px,2.5vw,14px);color:#ff2d55;letter-spacing:0.5em;margin-bottom:20px">PREDICT · PREPARE · PROTECT</div>
+    <p style="font-size:13px;color:rgba(255,255,255,0.4);max-width:400px;line-height:1.7;margin:0 auto 36px">
+      AI-powered disaster prediction using weather intelligence,
+      social media signals &amp; geospatial vulnerability analysis.
+    </p>
+    <button class="btn" onclick="showDashboard()"><span>▶ START ANALYSIS</span></button>
+  </div>
+
+  <!-- Stats -->
+  <div style="position:absolute;bottom:44px;display:flex;gap:32px;z-index:5">
+    <div style="text-align:center">
+      <div class="orb" style="font-size:18px;font-weight:700;color:#fff">847</div>
+      <div class="mono" style="font-size:8px;color:rgba(0,245,255,0.4);letter-spacing:2px;margin-top:2px">SENSORS</div>
+    </div>
+    <div style="text-align:center">
+      <div class="orb" style="font-size:18px;font-weight:700;color:#fff">12K</div>
+      <div class="mono" style="font-size:8px;color:rgba(0,245,255,0.4);letter-spacing:2px;margin-top:2px">SIGNALS</div>
+    </div>
+    <div style="text-align:center">
+      <div class="orb" style="font-size:18px;font-weight:700;color:#fff">99.2%</div>
+      <div class="mono" style="font-size:8px;color:rgba(0,245,255,0.4);letter-spacing:2px;margin-top:2px">UPTIME</div>
+    </div>
+    <div style="text-align:center">
+      <div class="orb" style="font-size:18px;font-weight:700;color:#fff">&lt;2s</div>
+      <div class="mono" style="font-size:8px;color:rgba(0,245,255,0.4);letter-spacing:2px;margin-top:2px">RESPONSE</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;bottom:0;left:0;right:0;border-top:1px solid rgba(0,245,255,0.07);background:rgba(5,5,10,0.9);padding:8px 24px">
+    <div id="ticker" class="mono" style="font-size:9px;color:rgba(0,245,255,0.4);letter-spacing:2px"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none;min-height:600px;background:#05050a;position:relative;overflow:hidden">
+  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.03;pointer-events:none"><defs><pattern id="grid2" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0L0 0 0 50" fill="none" stroke="#00f5ff" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#grid2)"/></svg>
+  <div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#00f5ff1a,transparent);animation:scan-line 6s linear infinite;pointer-events:none"></div>
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(0,245,255,0.08);background:rgba(5,5,10,0.95);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button onclick="showLanding()" style="background:none;border:1px solid rgba(0,245,255,0.2);color:rgba(0,245,255,0.5);font-family:'Space Mono',monospace;font-size:9px;padding:5px 10px;cursor:pointer;letter-spacing:1px">← BACK</button>
+      <span class="orb" style="font-size:12px;color:#00f5ff;letter-spacing:2px;font-weight:700">CRISISSENSE AI</span>
+      <span class="mono" style="font-size:8px;color:rgba(0,245,255,0.3)">/DASHBOARD</span>
+    </div>
+    <div id="header-risk" style="display:none;align-items:center;gap:8px;padding:5px 12px;border-radius:2px;transition:all 0.5s">
+      <div id="header-dot" style="width:5px;height:5px;border-radius:50%;animation:pulse-ring 1.5s infinite"></div>
+      <span id="header-label" class="mono" style="font-size:9px;letter-spacing:1px"></span>
+    </div>
+  </div>
+
+  <div style="padding:16px 20px;position:relative;z-index:2">
+    <!-- City Selector -->
+    <div class="glass" style="padding:16px;margin-bottom:16px">
+      <span class="label">◈ SELECT TARGET REGION</span>
+      <div id="city-buttons" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-panel" class="glass" style="display:none;padding:36px;text-align:center;margin-bottom:16px">
+      <svg id="spin-icon" width="48" height="48" viewBox="0 0 48 48" style="display:block;margin:0 auto 14px;animation:spin-slow 1.2s linear infinite">
+        <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(0,245,255,0.12)" stroke-width="2.5"/>
+        <path d="M24 6 A18 18 0 0 1 42 24" fill="none" stroke="#00f5ff" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <div class="mono" style="font-size:10px;color:#00f5ff;letter-spacing:2px;margin-bottom:10px">ANALYZING THREAT DATA...</div>
+      <div id="load-msgs"></div>
+    </div>
+
+    <!-- Analysis -->
+    <div id="analysis" style="display:none;animation:fade-in 0.5s ease">
+
+      <!-- Row 1 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+
+        <!-- Gauge -->
+        <div class="glass" style="padding:16px;display:flex;flex-direction:column;align-items:center">
+          <span class="label" style="align-self:flex-start">RISK ASSESSMENT</span>
+          <svg id="gauge-svg" width="180" height="110" viewBox="0 0 180 110">
+            <path d="M15,95 A75,75 0 0,1 165,95" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10" stroke-linecap="round"/>
+            <path id="gauge-arc" d="M15,95 A75,75 0 0,1 165,95" fill="none" stroke="#00f5ff" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 235" style="transition:stroke-dasharray 1.2s ease,stroke 0.5s"/>
+            <text id="gauge-score" x="90" y="82" text-anchor="middle" fill="#fff" font-size="28" font-family="Orbitron,monospace" font-weight="700">--</text>
+            <text id="gauge-level" x="90" y="98" text-anchor="middle" fill="#00f5ff" font-size="9" font-family="Space Mono,monospace" letter-spacing="2">ANALYZING</text>
+            <text x="15" y="108" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7" font-family="Space Mono,monospace">0</text>
+            <text x="165" y="108" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7" font-family="Space Mono,monospace">100</text>
+          </svg>
+          <div id="threats-display" style="margin-top:8px;text-align:center"></div>
+          <div id="city-display" class="mono" style="font-size:8px;color:rgba(255,255,255,0.25);margin-top:3px"></div>
+        </div>
+
+        <!-- Weather -->
+        <div class="glass" style="padding:16px">
+          <span class="label">WEATHER INTEL</span>
+          <div id="weather-condition" class="orb" style="font-size:10px;color:#ffb800;margin-bottom:12px;letter-spacing:1px"></div>
+          <div id="weather-stats"></div>
+        </div>
+
+        <!-- Score Breakdown -->
+        <div class="glass" style="padding:16px">
+          <span class="label">SCORE BREAKDOWN</span>
+          <div id="score-bars"></div>
+          <div style="border-top:1px solid rgba(0,245,255,0.08);padding-top:10px;margin-top:6px;display:flex;justify-content:space-between;align-items:center">
+            <span class="mono" style="font-size:8px;color:rgba(0,245,255,0.4)">TOTAL SCORE</span>
+            <span id="total-score" class="orb" style="font-size:22px;font-weight:700">--</span>
+          </div>
+          <div class="mono" style="font-size:7px;color:rgba(255,255,255,0.18);margin-top:4px">(W×0.5)+(S×0.3)+(L×0.2)</div>
+        </div>
+      </div>
+
+      <!-- Row 2: Map + Feed -->
+      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:12px;margin-bottom:12px">
+        <!-- Map -->
+        <div class="glass" style="padding:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span class="label" style="margin-bottom:0">TACTICAL ZONE MAP</span>
+            <span id="map-time" class="mono" style="font-size:7px;color:rgba(255,255,255,0.2)"></span>
+          </div>
+          <svg id="map-svg" width="100%" viewBox="0 0 300 220" style="display:block"></svg>
+          <div style="display:flex;gap:16px;margin-top:8px">
+            <div style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#ff2d55;box-shadow:0 0 4px #ff2d55;display:inline-block"></span><span class="mono" style="font-size:8px;color:rgba(255,255,255,0.35)">Danger Zone</span></div>
+            <div style="display:flex;align-items:center;gap:5px"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:8px solid #39ff14;display:inline-block;filter:drop-shadow(0 0 3px #39ff14)"></span><span class="mono" style="font-size:8px;color:rgba(255,255,255,0.35)">Safe Zone</span></div>
+          </div>
+        </div>
+
+        <!-- Social Feed -->
+        <div class="glass" style="padding:16px;overflow:hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span class="label" style="margin-bottom:0">SOCIAL SIGNALS</span>
+            <div style="display:flex;align-items:center;gap:5px">
+              <div style="position:relative;width:10px;height:10px">
+                <div id="ping-outer" style="position:absolute;inset:0;border-radius:50%;background:#ff2d55;animation:signal-ping 1.4s infinite"></div>
+                <div style="position:absolute;inset:2px;border-radius:50%;background:#ff2d55"></div>
+              </div>
+              <span id="panic-count" class="mono" style="font-size:8px;color:#ff6b7a;letter-spacing:1px"></span>
+            </div>
+          </div>
+          <div id="tweet-feed" style="overflow-y:auto;max-height:200px"></div>
+        </div>
+      </div>
+
+      <!-- Row 3: AI Panel -->
+      <div class="glass" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L1 4.5v5L7 13l6-3.5v-5L7 1z" stroke="#00f5ff" stroke-width="1" fill="none"/><path d="M7 1v12M1 4.5l6 3 6-3" stroke="#00f5ff" stroke-width="0.75" opacity="0.4" fill="none"/></svg>
+          <span class="label" style="margin-bottom:0">AI EMERGENCY BRIEFING</span>
+          <span id="ai-meta" class="mono" style="font-size:7px;color:rgba(255,255,255,0.12);margin-left:auto"></span>
+        </div>
+        <div id="ai-standby" style="text-align:center;padding:28px 0">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="display:block;margin:0 auto 12px;opacity:0.4;animation:spin-slow 8s linear infinite">
+            <circle cx="20" cy="20" r="16" stroke="#00f5ff" stroke-width="1" stroke-dasharray="3 5"/>
+          </svg>
+          <div class="mono" style="font-size:9px;color:rgba(0,245,255,0.4);letter-spacing:2px;margin-bottom:16px">AI RESPONSE ENGINE STANDBY</div>
+          <button class="btn" id="gen-btn" onclick="generateAI()"><span>⚡ GENERATE AI BRIEFING</span></button>
+        </div>
+        <div id="ai-loading" style="display:none;padding:16px 0">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:7px;height:7px;border-radius:50%;background:#00f5ff;animation:pulse-ring 0.7s infinite"></div>
+            <span class="mono" style="font-size:9px;color:#00f5ff;letter-spacing:1px">AI ANALYZING THREAT DATA...</span>
+          </div>
+        </div>
+        <pre id="ai-output" style="display:none;font-family:'Space Mono',monospace;font-size:11px;color:#a8e8f0;line-height:1.8;white-space:pre-wrap;padding:0;background:none;border:none"></pre>
+        <div id="ai-footer" style="display:none;border-top:1px solid rgba(0,245,255,0.08);padding-top:10px;margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <span id="ai-timestamp" class="mono" style="font-size:8px;color:rgba(0,245,255,0.3)"></span>
+          <button onclick="generateAI()" style="background:none;border:1px solid rgba(0,245,255,0.18);color:rgba(0,245,255,0.45);font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;cursor:pointer;letter-spacing:1px">↺ REFRESH</button>
+        </div>
+      </div>
+
+    </div><!-- /analysis -->
+
+    <!-- Empty state -->
+    <div id="empty-state" class="glass" style="padding:48px;text-align:center">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="display:block;margin:0 auto 16px;opacity:0.25;animation:spin-slow 14s linear infinite">
+        <circle cx="32" cy="32" r="26" stroke="#00f5ff" stroke-width="1" stroke-dasharray="5 4"/>
+      </svg>
+      <div class="orb" style="font-size:12px;color:rgba(0,245,255,0.4);letter-spacing:3px;margin-bottom:6px">SELECT A REGION</div>
+      <div class="mono" style="font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:1px">Choose a city above to begin threat analysis</div>
+    </div>
+
+  </div><!-- /padding -->
+</div><!-- /dashboard -->
+
+<script>
+const CITY_DATA = {
+  Chennai:{lat:13.08,lon:80.27,vulnerability:88,weather:{rainfall:85,windSpeed:62,humidity:91,temp:32,condition:"Heavy Rain Warning"},threats:["Flood","Cyclone"],dangerZones:[{name:"Adyar River Basin",lat:13.00,lon:80.25,r:40,level:"extreme"},{name:"Cooum River Area",lat:13.08,lon:80.27,r:32,level:"high"},{name:"Marina Coastal Belt",lat:13.06,lon:80.29,r:26,level:"high"}],safeZones:[{name:"Anna Nagar Shelter",lat:13.09,lon:80.21},{name:"T. Nagar Camp",lat:13.04,lon:80.23},{name:"Guindy Stadium",lat:13.01,lon:80.22}],tweets:[{u:"ravi_chennai",t:"Water rising in Adyar! Roads flooded near bridge. #Chennai #Floods",p:true,time:"2m ago"},{u:"news_tn",t:"Red alert: 15cm rainfall expected in next 6hrs. Stay indoors.",p:true,time:"5m ago"},{u:"priya_vlogs",t:"Cooum water levels rising fast. Please evacuate low areas!",p:true,time:"8m ago"},{u:"weather_ind",t:"Cyclonic system intensifying in Bay of Bengal. Coastal areas evacuate.",p:true,time:"12m ago"},{u:"gk_krishnan",t:"Help needed at Besant Nagar! Water entering ground floor apartments",p:true,time:"15m ago"},{u:"metro_rail",t:"Metro operations normal. Avoid low-lying roads.",p:false,time:"20m ago"}]},
+  Mumbai:{lat:19.07,lon:72.87,vulnerability:79,weather:{rainfall:72,windSpeed:48,humidity:88,temp:29,condition:"Orange Alert Active"},threats:["Flood","Landslide"],dangerZones:[{name:"Mithi River Zone",lat:19.07,lon:72.87,r:36,level:"high"},{name:"Dharavi Low-Lying",lat:19.04,lon:72.85,r:26,level:"high"},{name:"Kurla Waterlogging",lat:19.07,lon:72.88,r:20,level:"medium"}],safeZones:[{name:"BKC Evac Point",lat:19.07,lon:72.87},{name:"Andheri Sports Complex",lat:19.12,lon:72.84},{name:"Bandra Relief Camp",lat:19.05,lon:72.83}],tweets:[{u:"mumbai_floods",t:"Mithi river overflowing! Kurla residents evacuating. #MumbaiRains",p:true,time:"3m ago"},{u:"bmc_mumbai",t:"Orange alert: avoid low-lying areas G/N wards. Pumping stations active.",p:false,time:"7m ago"},{u:"local_reporter",t:"Waterlogging at CST, trains delayed. Avoid Sion-Dharavi road!",p:true,time:"11m ago"},{u:"vijay_m",t:"Stuck in flooding near Powai! Send help. Water entering cars.",p:true,time:"14m ago"},{u:"weather_mum",t:"IMD: 120mm rain in next 24hrs. Landslide risk in Aarey colony.",p:true,time:"18m ago"}]},
+  Delhi:{lat:28.61,lon:77.21,vulnerability:55,weather:{rainfall:22,windSpeed:18,humidity:58,temp:38,condition:"Heatwave Advisory"},threats:["Heatwave","Flash Flood"],dangerZones:[{name:"Yamuna Floodplain",lat:28.65,lon:77.25,r:30,level:"medium"},{name:"Old Delhi Low Zone",lat:28.66,lon:77.23,r:18,level:"medium"}],safeZones:[{name:"Civil Lines Shelter",lat:28.68,lon:77.22},{name:"Connaught Hub",lat:28.63,lon:77.22}],tweets:[{u:"delhi_wx",t:"Temperature touches 44°C. Heat stroke risk high. Stay indoors.",p:true,time:"5m ago"},{u:"yamuna_watch",t:"Yamuna rising steadily. Floodplain residents warned to evacuate.",p:true,time:"9m ago"},{u:"ndmc_delhi",t:"Water shortage in East Delhi. Tankers deployed.",p:false,time:"16m ago"},{u:"rk_news",t:"Drizzle tonight may cause flash flood risk in low-lying areas.",p:false,time:"21m ago"}]},
+  Kolkata:{lat:22.57,lon:88.36,vulnerability:72,weather:{rainfall:65,windSpeed:55,humidity:86,temp:31,condition:"Cyclone Warning Zone"},threats:["Cyclone","Flood"],dangerZones:[{name:"Sundarbans Belt",lat:22.40,lon:88.60,r:42,level:"extreme"},{name:"South Kolkata Low",lat:22.53,lon:88.35,r:28,level:"high"},{name:"Hooghly Riverside",lat:22.58,lon:88.34,r:22,level:"medium"}],safeZones:[{name:"Salt Lake Stadium",lat:22.58,lon:88.40},{name:"New Town Relief Hub",lat:22.59,lon:88.47}],tweets:[{u:"kolkata_live",t:"Cyclone Jawad approaching! Coastal RED alert. Evacuate NOW.",p:true,time:"1m ago"},{u:"wb_disaster",t:"340 cyclone shelters opened. 2 lakh evacuated from coastal areas.",p:false,time:"6m ago"},{u:"tapas_local",t:"Wind speed increasing rapidly in Diamond Harbour. Trees falling!",p:true,time:"10m ago"},{u:"river_alert",t:"Hooghly breaches embankment at 2 points. Water rising fast!",p:true,time:"13m ago"}]},
+  Bangalore:{lat:12.97,lon:77.59,vulnerability:38,weather:{rainfall:18,windSpeed:14,humidity:64,temp:26,condition:"Light Showers"},threats:["Minor Flooding"],dangerZones:[{name:"Bellandur Lake Area",lat:12.93,lon:77.66,r:16,level:"low"}],safeZones:[{name:"Cubbon Park Rally",lat:12.98,lon:77.59},{name:"Banashankari Center",lat:12.92,lon:77.57}],tweets:[{u:"blr_rains",t:"Light showers across city. Outer Ring Road has minor puddles.",p:false,time:"8m ago"},{u:"bbmp_official",t:"Storm drains cleared. Minor waterlogging possible in low areas.",p:false,time:"15m ago"},{u:"tech_blr",t:"IT corridor roads clear. Normal commute expected today.",p:false,time:"23m ago"}]}
+};
+
+let currentCity = null;
+let aiTriggered = false;
+
+function calcRisk(d){
+  const wS = Math.min(100,(d.weather.rainfall*0.5)+(d.weather.windSpeed*0.3)+(d.weather.humidity*0.2));
+  const kw=["flood","earthquake","help","water rising","evacuate","danger","rising","breach","cyclone","emergency","stuck","alert"];
+  const pc=d.tweets.reduce((a,t)=>a+kw.filter(k=>t.t.toLowerCase().includes(k)).length,0);
+  const sS=Math.min(100,pc*8);
+  const score=Math.round((wS*0.5)+(sS*0.3)+(d.vulnerability*0.2));
+  const level=score<30?"LOW":score<70?"MEDIUM":"HIGH";
+  return{score,level,wS:Math.round(wS),sS:Math.round(sS),lV:d.vulnerability};
+}
+
+function riskColor(level){return level==="LOW"?"#39ff14":level==="MEDIUM"?"#ffb800":"#ff2d55"}
+
+// Particles
+function initParticles(){
+  const c=document.getElementById("particles");
+  if(!c)return;
+  for(let i=0;i<20;i++){
+    const d=document.createElement("div");
+    d.style.cssText=`position:absolute;left:${Math.random()*100}%;bottom:-5px;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;border-radius:50%;background:#00f5ff;opacity:${0.2+Math.random()*0.4};animation:particle-rise ${8+Math.random()*10}s ${Math.random()*8}s linear infinite`;
+    c.appendChild(d);
+  }
+}
+
+// Ticker
+const tickerMsgs=["MONITORING 847 SENSORS ACTIVE","ANALYZING SOCIAL SIGNALS IN REAL-TIME","AI MODEL ONLINE — THREAT ASSESSMENT READY","SATELLITE WEATHER FEED CONNECTED"];
+let tickI=0;
+function updateTicker(){
+  const el=document.getElementById("ticker");
+  if(el)el.textContent="▶ "+tickerMsgs[tickI%tickerMsgs.length];
+  tickI++;
+}
+
+// City buttons
+function initCityButtons(){
+  const c=document.getElementById("city-buttons");
+  Object.keys(CITY_DATA).forEach(city=>{
+    const b=document.createElement("button");
+    b.className="city-pill";
+    b.id="city-"+city;
+    b.textContent=city.toUpperCase();
+    b.onclick=()=>selectCity(city);
+    c.appendChild(b);
+  });
+}
+
+function showLanding(){
+  document.getElementById("landing").style.display="flex";
+  document.getElementById("dashboard").style.display="none";
+  currentCity=null;aiTriggered=false;
+}
+function showDashboard(){
+  document.getElementById("landing").style.display="none";
+  document.getElementById("dashboard").style.display="block";
+}
+
+function selectCity(city){
+  currentCity=city;aiTriggered=false;
+  document.querySelectorAll(".city-pill").forEach(b=>b.classList.remove("active"));
+  document.getElementById("city-"+city).classList.add("active");
+  document.getElementById("empty-state").style.display="none";
+  document.getElementById("analysis").style.display="none";
+  document.getElementById("loading-panel").style.display="block";
+  // Reset AI
+  document.getElementById("ai-standby").style.display="block";
+  document.getElementById("ai-loading").style.display="none";
+  document.getElementById("ai-output").style.display="none";
+  document.getElementById("ai-footer").style.display="none";
+
+  const msgs=["FETCHING WEATHER SIGNALS...","SCANNING SOCIAL MEDIA...","COMPUTING RISK SCORE...","LOADING MAP DATA..."];
+  const el=document.getElementById("load-msgs");
+  el.innerHTML="";
+  msgs.forEach((m,i)=>{
+    setTimeout(()=>{
+      const d=document.createElement("div");
+      d.className="mono";
+      d.style.cssText="font-size:8px;color:rgba(0,245,255,0.3);letter-spacing:1px;margin-top:4px;animation:fade-in 0.3s ease";
+      d.textContent=m;
+      el.appendChild(d);
+    },i*320);
+  });
+
+  setTimeout(()=>{
+    document.getElementById("loading-panel").style.display="none";
+    renderAnalysis(city);
+  },1600);
+}
+
+function renderAnalysis(city){
+  const d=CITY_DATA[city];
+  const r=calcRisk(d);
+  const rc=riskColor(r.level);
+
+  // Header badge
+  const hb=document.getElementById("header-risk");
+  hb.style.display="flex";
+  hb.style.border=`1px solid ${rc}44`;
+  hb.style.background=`${rc}11`;
+  document.getElementById("header-dot").style.background=rc;
+  document.getElementById("header-dot").style.boxShadow=`0 0 5px ${rc}`;
+  document.getElementById("header-label").style.color=rc;
+  document.getElementById("header-label").textContent=r.level+" RISK · "+r.score+"/100";
+
+  // Gauge
+  setTimeout(()=>{
+    const arc=document.getElementById("gauge-arc");
+    const fill=Math.round(235*r.score/100);
+    arc.style.strokeDasharray=fill+" "+(235-fill);
+    arc.style.stroke=rc;
+  },100);
+  document.getElementById("gauge-score").textContent=r.score;
+  document.getElementById("gauge-level").textContent=r.level+" RISK";
+  document.getElementById("gauge-level").style.fill=rc;
+  document.getElementById("threats-display").innerHTML=`<span class="orb" style="font-size:9px;color:${rc};letter-spacing:1px">${d.threats.join(" · ")}</span>`;
+  document.getElementById("city-display").textContent=city.toUpperCase()+" · INDIA";
+
+  // Weather
+  document.getElementById("weather-condition").textContent=d.weather.condition;
+  const wData=[["RAINFALL",d.weather.rainfall,"mm","#4da6ff"],["WIND SPEED",d.weather.windSpeed,"km/h","#00f5ff"],["HUMIDITY",d.weather.humidity,"%","#7de8f0"],["TEMPERATURE",d.weather.temp,"°C","#ff9f43"]];
+  document.getElementById("weather-stats").innerHTML=wData.map(([l,v,u,c])=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+      <span class="mono" style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px">${l}</span>
+      <div style="display:flex;align-items:center;gap:7px">
+        <div style="width:36px;height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:${Math.min(100,v)}%;background:${c};box-shadow:0 0 3px ${c};animation:bar-fill 1s ease both"></div></div>
+        <span class="orb" style="font-size:11px;color:${c};min-width:50px;text-align:right">${v}${u}</span>
+      </div>
+    </div>`).join("");
+
+  // Score bars
+  const sData=[["WEATHER SEVERITY",r.wS,"×0.50","#4da6ff"],["SOCIAL SIGNALS",r.sS,"×0.30","#ff6b7a"],["LOCATION VULN.",r.lV,"×0.20","#ffb800"]];
+  document.getElementById("score-bars").innerHTML=sData.map(([l,v,w,c])=>`
+    <div style="margin-bottom:11px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+        <span class="mono" style="font-size:7px;color:rgba(255,255,255,0.35);letter-spacing:1px">${l}</span>
+        <span class="mono" style="font-size:7px;color:rgba(255,255,255,0.2)">${w}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <div style="flex:1;height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden"><div style="height:100%;width:${v}%;background:${c};box-shadow:0 0 5px ${c}44;animation:bar-fill 1s ease both"></div></div>
+        <span class="orb" style="font-size:12px;color:${c};min-width:22px">${v}</span>
+      </div>
+    </div>`).join("");
+  const tsEl=document.getElementById("total-score");
+  tsEl.textContent=r.score;tsEl.style.color=rc;
+
+  // Map
+  renderMap(d,city);
+  document.getElementById("map-time").textContent="LIVE · "+new Date().toLocaleTimeString();
+
+  // Tweets
+  const panics=d.tweets.filter(t=>t.p).length;
+  document.getElementById("panic-count").textContent=panics+" PANIC SIGNALS";
+  document.getElementById("tweet-feed").innerHTML=d.tweets.map((t,i)=>`
+    <div class="tweet ${t.p?"panic":""}" style="animation-delay:${i*0.08}s">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+        <span class="mono" style="font-size:9px;color:${t.p?"#ff6b7a":"#00f5ff"};opacity:0.8">@${t.u}</span>
+        <span class="mono" style="font-size:8px;color:rgba(255,255,255,0.2)">${t.time}</span>
+      </div>
+      <p style="font-size:11px;color:rgba(255,255,255,0.65);line-height:1.5">${t.t}</p>
+      ${t.p?'<div style="display:flex;align-items:center;gap:4px;margin-top:3px"><span style="width:5px;height:5px;border-radius:50%;background:#ff2d55;display:inline-block;animation:pulse-ring 1s infinite"></span><span class="mono" style="font-size:8px;color:#ff6b7a;letter-spacing:1px">PANIC SIGNAL DETECTED</span></div>':""}
+    </div>`).join("");
+
+  // AI meta
+  document.getElementById("ai-meta").textContent="POWERED BY CLAUDE · "+city.toUpperCase();
+  document.getElementById("ai-standby").style.display="block";
+
+  document.getElementById("analysis").style.display="block";
+}
+
+function renderMap(d,cityName){
+  const mapW=300,mapH=220;
+  const allPts=[...d.dangerZones,...d.safeZones];
+  const lats=allPts.map(z=>z.lat),lons=allPts.map(z=>z.lon);
+  const minLat=Math.min(...lats)-0.06,maxLat=Math.max(...lats)+0.06;
+  const minLon=Math.min(...lons)-0.06,maxLon=Math.max(...lons)+0.06;
+  function toXY(lat,lon){return{x:((lon-minLon)/(maxLon-minLon))*(mapW-60)+30,y:((maxLat-lat)/(maxLat-minLat))*(mapH-60)+30}}
+  const lc={"extreme":"#ff0040","high":"#ff2d55","medium":"#ffb800","low":"#ffd700"};
+
+  let defs=`<defs>${d.dangerZones.map((z,i)=>`<radialGradient id="dg${i}" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${lc[z.level]||"#ff2d55"}" stop-opacity="0.4"/><stop offset="100%" stop-color="${lc[z.level]||"#ff2d55"}" stop-opacity="0"/></radialGradient>`).join("")}${d.safeZones.map((_,i)=>`<radialGradient id="sg${i}" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#39ff14" stop-opacity="0.28"/><stop offset="100%" stop-color="#39ff14" stop-opacity="0"/></radialGradient>`).join("")}</defs>`;
+
+  let bg=`<rect width="${mapW}" height="${mapH}" fill="#070712"/>`;
+  for(let i=0;i<7;i++)bg+=`<line x1="0" y1="${i*mapH/6}" x2="${mapW}" y2="${i*mapH/6}" stroke="rgba(0,245,255,0.04)" stroke-width="0.5"/>`;
+  for(let i=0;i<9;i++)bg+=`<line x1="${i*mapW/8}" y1="0" x2="${i*mapW/8}" y2="${mapH}" stroke="rgba(0,245,255,0.04)" stroke-width="0.5"/>`;
+
+  let dzones=d.dangerZones.map((z,i)=>{
+    const {x,y}=toXY(z.lat,z.lon);const r=z.r*0.85;
+    return `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#dg${i})"/>
+    <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${lc[z.level]||"#ff2d55"}" stroke-width="0.7" stroke-dasharray="3 3" opacity="0.6"/>
+    <circle cx="${x}" cy="${y}" r="5" fill="${lc[z.level]||"#ff2d55"}" opacity="0.9" style="filter:drop-shadow(0 0 4px ${lc[z.level]||"#ff2d55"})"/>
+    <text x="${x+8}" y="${y-6}" fill="${lc[z.level]||"#ff2d55"}" font-size="7" font-family="Space Mono,monospace" opacity="0.75">${z.name.slice(0,16)}</text>
+    ${z.level==="extreme"?`<circle cx="${x}" cy="${y}" r="${r+8}" fill="none" stroke="#ff0040" stroke-width="0.4" opacity="0.3" style="animation:pulse-ring 2s ease-in-out infinite"/>`:""}`
+  }).join("");
+
+  let szones=d.safeZones.map((z,i)=>{
+    const {x,y}=toXY(z.lat,z.lon);
+    return `<circle cx="${x}" cy="${y}" r="18" fill="url(#sg${i})"/>
+    <polygon points="${x},${y-9} ${x-7},${y+5} ${x+7},${y+5}" fill="#39ff14" opacity="0.85" style="filter:drop-shadow(0 0 3px #39ff14)"/>
+    <text x="${x+10}" y="${y+2}" fill="#39ff14" font-size="7" font-family="Space Mono,monospace" opacity="0.6">${z.name.slice(0,13)}</text>`
+  }).join("");
+
+  let frame=`<path d="M3 12 L3 3 L12 3" fill="none" stroke="#00f5ff" stroke-width="0.8" opacity="0.35"/>
+  <path d="M${mapW-3} 12 L${mapW-3} 3 L${mapW-12} 3" fill="none" stroke="#00f5ff" stroke-width="0.8" opacity="0.35"/>
+  <path d="M3 ${mapH-12} L3 ${mapH-3} L12 ${mapH-3}" fill="none" stroke="#00f5ff" stroke-width="0.8" opacity="0.35"/>
+  <path d="M${mapW-3} ${mapH-12} L${mapW-3} ${mapH-3} L${mapW-12} ${mapH-3}" fill="none" stroke="#00f5ff" stroke-width="0.8" opacity="0.35"/>
+  <text x="${mapW/2}" y="${mapH-5}" text-anchor="middle" fill="rgba(0,245,255,0.25)" font-size="7" font-family="Space Mono,monospace" letter-spacing="3">${cityName.toUpperCase()} · TACTICAL VIEW</text>`;
+
+  document.getElementById("map-svg").innerHTML=defs+bg+dzones+szones+frame;
+}
+
+async function generateAI(){
+  if(!currentCity)return;
+  const d=CITY_DATA[currentCity];
+  const r=calcRisk(d);
+  const rc=riskColor(r.level);
+  aiTriggered=true;
+
+  document.getElementById("ai-standby").style.display="none";
+  document.getElementById("ai-loading").style.display="block";
+  document.getElementById("ai-output").style.display="none";
+  document.getElementById("ai-footer").style.display="none";
+
+  const prompt=`You are CrisisSense AI — an emergency response assistant. A disaster alert has been triggered.
+
+LOCATION: ${currentCity}, India
+RISK LEVEL: ${r.level} (Score: ${r.score}/100)
+ACTIVE THREATS: ${d.threats.join(", ")}
+WEATHER: ${d.weather.condition} | Rainfall: ${d.weather.rainfall}mm | Wind: ${d.weather.windSpeed}km/h
+
+Generate a concise emergency response briefing with exactly these sections:
+
+⚠ IMMEDIATE ACTIONS (3 bullet points — what to do RIGHT NOW)
+🏠 EVACUATION GUIDE (2-3 specific steps for ${currentCity})
+📦 SURVIVAL KIT (5 essential items)
+📞 EMERGENCY CONTACTS (real Indian emergency numbers)
+🔴 CRITICAL WARNING (one sentence most important warning)
+
+Be specific to ${currentCity} and the ${d.threats.join("/")} threat. Keep each point under 15 words. Direct, urgent language.`;
+
+  const fallback=`⚠ IMMEDIATE ACTIONS
+• Move to high ground immediately — avoid all low-lying roads now
+• Shut off electricity at main switch to prevent electrocution risk
+• Alert elderly neighbors and assist evacuation without delay
+
+🏠 EVACUATION GUIDE
+• Use ${currentCity==="Chennai"?"GST Road → Tambaram direction":currentCity==="Mumbai"?"Western Express Highway northbound":currentCity==="Kolkata"?"NH-12 towards Durgapur":"primary city arterial roads"} as evacuation route
+• Head to nearest government designated shelter with ID documents
+• Do NOT cross flooded roads — 6 inches of water can sweep a person
+
+📦 SURVIVAL KIT
+• Water: 3 liters per person minimum (72-hour supply)
+• First aid kit with all prescription medications
+• Flashlight, extra batteries, waterproof phone pouch
+• Waterproof bag containing ID, insurance, and key documents
+• Emergency food: biscuits, energy bars, oral rehydration salts
+
+📞 EMERGENCY CONTACTS
+• National Disaster Helpline: 1078 (24/7 free)
+• Police: 100 | Fire: 101 | Ambulance: 108
+• NDRF Control Room: 011-24363260
+• State Disaster Management Authority: 1070
+
+🔴 CRITICAL WARNING
+NEVER drive through floodwater — most flood deaths occur inside submerged vehicles.`;
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+    const data=await res.json();
+    const text=data.content?.map(b=>b.text||"").join("")||"";
+    streamText(text||fallback,rc);
+  }catch(e){streamText(fallback,rc)}
+}
+
+function streamText(text,rc){
+  document.getElementById("ai-loading").style.display="none";
+  const out=document.getElementById("ai-output");
+  out.style.display="block";
+  out.textContent="";
+  let i=0;
+  const iv=setInterval(()=>{
+    i+=3;out.textContent=text.slice(0,i);
+    if(i>=text.length){
+      out.textContent=text;
+      clearInterval(iv);
+      const footer=document.getElementById("ai-footer");
+      footer.style.display="flex";
+      document.getElementById("ai-timestamp").textContent="GENERATED BY CRISISSENSE AI · "+new Date().toLocaleTimeString();
+    }
+  },14);
+}
+
+// Init
+initParticles();
+initCityButtons();
+updateTicker();
+setInterval(updateTicker,2500);
+setInterval(()=>{
+  const el=document.getElementById("map-time");
+  if(el&&el.textContent)el.textContent="LIVE · "+new Date().toLocaleTimeString();
+},1000);
+</script>
+</body>
+</html>
