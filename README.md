@@ -297,6 +297,6 @@ MIT © [Sayanmondal755089](https://github.com/Sayanmondal755089)
 ---
 
 <div align="center">
-  <strong>Built for the AI & Disaster Tech Hackathon · Dec 2024</strong><br/>
+  <strong>Built for the AI & Disaster Tech Hackathon · March 2026</strong><br/>
   <em>Predict. Prepare. Protect.</em>
 </div>
